@@ -68,6 +68,12 @@ static void node_off(struct power_node *node)
 		return;
 	}
 
+	if (!strcmp(node->name, "VDD-3.3V")) {
+		printf("not cler %s\n", node->name);
+		return;
+	}
+
+
 	if (!strcmp(node->name, "EN_12V_SYS")) {
 		printf("not cler %s\n", node->name);
 		return;
