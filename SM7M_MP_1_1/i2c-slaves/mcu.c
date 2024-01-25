@@ -209,7 +209,7 @@ void mcu_process(void)
 		break;
 	case CMD_REBOOT:
 		mcu_eeprom_power_off_reason(EEPROM_POWER_OFF_REASON_REBOOT);
-		chip_popd_reset_early();
+		chip_popd_reset_early_se8();
 		set_needpoweron();
 		wdt_reset();
 		break;

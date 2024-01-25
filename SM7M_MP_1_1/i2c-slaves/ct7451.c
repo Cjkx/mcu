@@ -227,7 +227,7 @@ static void ct7451_process(void)
 
 	if (get_needpoweron_satus() == 1) {
 		if (local_temp < get_repoweron_temp() && remote_temp < 80) {
-			chip_popd_reset_end();
+			chip_popd_reset_end_se8();
 			clr_needpoweron();
 		}
 	}
