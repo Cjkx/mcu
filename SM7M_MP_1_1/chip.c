@@ -54,9 +54,22 @@ void chip_popd_reset_early(void)
 	mdelay(50);
 }
 
+void chip_popd_reset_early_se8(void)
+{
+	chip_disable();
+	mdelay(50);
+}
+
 void chip_popd_reset_end(void)
 {
 	power_on();
+	uptime = 0;
+	++reset_times;
+	chip_enable();
+}
+
+void chip_popd_reset_end_se8(void)
+{
 	uptime = 0;
 	++reset_times;
 	chip_enable();

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <debug.h>
 #include <mcu.h>
+#include <project.h>
 
 #define CT7451_REG_MAX	(22)
 
@@ -227,7 +228,11 @@ static void ct7451_process(void)
 
 	if (get_needpoweron_satus() == 1) {
 		if (local_temp < get_repoweron_temp() && remote_temp < 80) {
-			chip_popd_reset_end();
+			if (get_board_type() == SM7M_MP_SE8M)
+				chip_popd_reset_end_se8();
+			else 
+				chip_popd_reset_end();
+
 			clr_needpoweron();
 		}
 	}
