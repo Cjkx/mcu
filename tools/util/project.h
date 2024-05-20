@@ -42,4 +42,7 @@
 #define SG2042REVB	0x81
 /* 0x82 use for mango Pisces */
 #define SG2042X4	0x83
+
+#define BM2044REVB	0xb1
+
 #endif

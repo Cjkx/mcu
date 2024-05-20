@@ -44,4 +44,6 @@
 
 #define WOLFCLAW	0xa0
 
+#define BM2044REVB	0xb1
+
 #endif

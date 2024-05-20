@@ -151,6 +151,7 @@ struct {
 	{"ATHENA2EVB", {ATHENA2EVB}},
 	{"ATHENA2ACP", {ATHENA2ACP}},
 	{"SC7FP150", {SC7FP150}},
+	{"BM2044REVB", {BM2044REVB}},
 };
 
 const char *mcu_family[] = {"STM32L0", "GD32E50"};

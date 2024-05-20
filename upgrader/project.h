@@ -41,4 +41,6 @@
 #define SG2042EVB	0x80
 #define SG2042REVB	0x81
 
+#define BM2044REVB	0xb1
+
 #endif
