@@ -29,6 +29,7 @@
 #define SE7     0x33
 #define SM7MSE6M  0x34
 #define SM7G   0x35
+#define SM7M_MP_1_1   0x36
 
 /* MCU Family */
 enum {

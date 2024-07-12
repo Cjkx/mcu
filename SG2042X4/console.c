@@ -14,6 +14,7 @@
 #include <chip.h>
 #include <power.h>
 #include <mcu.h>
+#include <wdt.h>
 
 static struct ecdc_console *console;
 extern int power_is_on;
@@ -54,6 +55,8 @@ static void cmd_poweroff(void *hint, int argc, char const *argv[])
 	power_off();
 	if (gpio_get(GPIOE, GPIO_PIN_14) == 0)
 		power_is_on = true;
+
+	wdt_reset();
 	timer_mdelay(500);
 
 	printf("SG2042X4 POWER OFF\n");
@@ -66,6 +69,7 @@ static const char * const cmd_reboot_usage =
 static void cmd_reboot(void *hint, int argc, char const *argv[])
 {
 	power_off();
+	wdt_reset();
 	timer_mdelay(500);
 	power_on();
 	chip_enable();
@@ -73,6 +77,17 @@ static void cmd_reboot(void *hint, int argc, char const *argv[])
 		power_is_on = false;
 
 	printf("SG2042X4 REBOOT\n");
+}
+
+static const char * const cmd_reset_usage =
+"reset\n"
+"    reset the sg2042x4\n";
+
+static void cmd_reset(void *hint, int argc, char const *argv[])
+{
+	chip_reset();
+	wdt_reset();
+	printf("SG2042X4 RESET\n");
 }
 
 static const char * const cmd_info_usage =
@@ -142,6 +157,15 @@ static void cmd_enprint(void *hint, int argc, char const *argv[])
 	}
 }
 
+static const char * const cmd_wdt_usage =
+"wdt\n"
+"    show wdt information\n";
+
+static void cmd_wdt(void *hint, int argc, char const *argv[])
+{
+	wdt_info_print();
+}
+
 uint32_t sys_rst_pin_list[1][2] = {
 	{SYS_RST_X_H_PORT, SYS_RST_X_H_PIN},
 };
@@ -158,10 +182,12 @@ static struct command command_list[] = {
 	{"poweron", NULL, cmd_poweron_usage, cmd_poweron},
 	{"poweroff", NULL, cmd_poweroff_usage, cmd_poweroff},
 	{"reboot", NULL, cmd_reboot_usage, cmd_reboot},
+	{"reset", NULL, cmd_reset_usage, cmd_reset},
 	{"info", NULL, cmd_info_usage, cmd_info},
 	{"temp", NULL, cmd_temp_usage, cmd_temp},
 	{"enprint", NULL, cmd_enprint_usage, cmd_enprint},
 	{"current", NULL, cmd_current_usage, cmd_current},
+	{"wdt", NULL, cmd_wdt_usage, cmd_wdt},
 };
 
 void print_usage(struct command *cmd)

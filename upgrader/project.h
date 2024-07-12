@@ -23,6 +23,7 @@
 #define BM1684XEVB	0x20
 #define SC7PRO		0x21
 #define SC7HP75		0x22
+#define SC7FP150        0x23
 
 #define SM7M            0x30
 #define SM7SE6M         0x31
@@ -30,9 +31,15 @@
 #define SE7             0x33
 #define SM7MSE6M        0x34
 #define SM7G            0x35
+#define SM7M_MP_1_1     0X36
+#define SM7M_MP_1_2     0X37
+#define SE7Q            0x38
 
+#define SM7CUSTV1       0x3a
 #define ATHENA2EVB	0x40
 #define ATHENA2ACP	0x41
+
+#define SM7_HK          0X3b
 
 #define SG2042EVB	0x80
 #define SG2042REVB	0x81

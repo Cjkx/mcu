@@ -60,6 +60,7 @@ int main(void)
 	i2c_master_init(I2C3);
 	mp5475_init();
 	mp5475_buck_on(0);
+	timer_mdelay(20);
 	/* check if i am in test board and if we need enter test mode */
 	if (detect_test_mode() == TEST_MODE_HALT) {
 
@@ -109,6 +110,9 @@ int main(void)
 	if (get_board_type() != SM7MQY)
 		set_board_type(SM7SE6M);
 
+    if (tca6416a_available() && pic_available())
+        set_board_type(SE7Q);
+
 	debug("%s %s working at ",
 	      get_board_type_name(),
 	      get_stage() == RUN_STAGE_LOADER ? "loader" : "application");
@@ -120,6 +124,12 @@ int main(void)
 		debug("mix mode\n");
 	else
 		debug("unkown mode\n");
+
+    if (get_board_type() == SE7Q) {
+        se5_init();
+        register_ext_led(MCU_UART1_TX_PORT, MCU_UART1_TX_PIN);
+        register_ext_led(MCU_UART1_RX_PORT, MCU_UART1_RX_PIN);
+    }
 
 	nvic_enable_irq(NVIC_I2C1_IRQ);
 	i2c_slave_init(&i2c1_slave_ctx, (void *)I2C1_BASE,
@@ -156,6 +166,7 @@ int main(void)
 
 	return 0;
 }
+
 
 void i2c1_isr(void)
 {

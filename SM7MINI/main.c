@@ -24,7 +24,7 @@
 #include <power.h>
 #include <se5.h>
 #include <se6.h>
-#include <sm5.h>
+#include <sm7.h>
 #include <loop.h>
 #include <keyboard.h>
 #include <eeprom.h>
@@ -87,8 +87,9 @@ int main(void)
 
 		nvic_disable_irq(NVIC_I2C2_IRQ);
 		i2c_slave_stop(&i2c2_slave_ctx);
+	} else {
+		set_board_type(SM7M);
 	}
-
 
 	/* reset MCU_INT */
 	gpio_clear(MCU_INT_PORT, MCU_INT_PIN);
@@ -106,18 +107,13 @@ int main(void)
 	power_on();
 	chip_init();
 
-	if (get_board_type() != SM7M && get_board_type() != SM7MSE6M) {
-		if (!tca6416a_available())
-			set_board_type(SE7);
-		else
-			set_board_type(SM7M);
-	}
-
 	debug("%s %s working at ",
 	      get_board_type_name(),
 	      get_stage() == RUN_STAGE_LOADER ? "loader" : "application");
-	if (get_work_mode() == WORK_MODE_SOC)
+	if (get_work_mode() == WORK_MODE_SOC) {
+		sm7_init();
 		debug("soc mode\n");
+	}
 	else if (get_work_mode() == WORK_MODE_PCIE)
 		debug("pcie mode\n");
 	else if (get_work_mode() == WORK_MODE_MIXED)
