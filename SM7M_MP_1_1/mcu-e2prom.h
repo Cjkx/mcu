@@ -6,6 +6,7 @@
 #define EEPROM_POWER_OFF_REASON_REBOOT		0x82
 #define EEPROM_POWER_OFF_REASON_OVER_HEAT	0x83
 #define EEPROM_POWER_OFF_REASON_WATCHDOG	0x84
+#define EEPROM_POWER_OFF_REASON_EXT_GPIO	0x85
 
 int mcu_eeprom_read_byte(void *priv, unsigned int offset);
 int mcu_eeprom_write_byte(void *priv, unsigned int offset, uint8_t data);

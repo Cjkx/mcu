@@ -36,6 +36,7 @@
 #include <at24c128c-e2prom.h>
 #include <se6.h>
 #include <mcu-e2prom.h>
+#include <ruichi.h>
 
 static struct i2c_slave_ctx i2c1_slave_ctx;
 static struct i2c_slave_ctx i2c2_slave_ctx;
@@ -57,7 +58,21 @@ int main(void)
 #endif
 
 	led_init();
-	led_set_frequency(0);
+	led_set_frequency(10);
+
+	/* reset MCU_INT */
+	// gpio_clear(MCU_INT_PORT, MCU_INT_PIN);
+	gpio_mode_setup(MCU_INT_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE,
+			MCU_INT_PIN);
+
+	timer_mdelay(100);
+	while (!detect_power_gpio()) {
+		timer_mdelay(500);
+		debug("\nwait for mcu int pin pull up\n");
+	}
+
+	led_set_frequency(1);
+
 	i2c_master_init(I2C1);
 	i2c_master_init(I2C2);
 	//i2c_master_init(I2C3);
@@ -65,40 +80,37 @@ int main(void)
 	mp5475_buck_on(0);
 	//timer_mdelay(200);
 
-	/* check if i am in test board and if we need enter test mode */
-	if (detect_test_mode() == TEST_MODE_HALT) {
+	// /* check if i am in test board and if we need enter test mode */
+	// if (detect_test_mode() == TEST_MODE_HALT) {
 
-		mcu_set_test_mode(true);
-		led_set_frequency(10);
-		/* convert MCU_INT from input to output */
-		gpio_clear(MCU_INT_PORT, MCU_INT_PIN);
-		gpio_set_output_options(MCU_INT_PORT, GPIO_OTYPE_PP,
-					GPIO_OSPEED_VERYHIGH, MCU_INT_PIN);
-		gpio_mode_setup(MCU_INT_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
-				MCU_INT_PIN);
+	// 	mcu_set_test_mode(true);
+	// 	led_set_frequency(10);
+	// 	/* convert MCU_INT from input to output */
+	// 	gpio_clear(MCU_INT_PORT, MCU_INT_PIN);
+	// 	gpio_set_output_options(MCU_INT_PORT, GPIO_OTYPE_PP,
+	// 				GPIO_OSPEED_VERYHIGH, MCU_INT_PIN);
+	// 	gpio_mode_setup(MCU_INT_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
+	// 			MCU_INT_PIN);
 
-		set_board_type(SM7M);
+	// 	set_board_type(SM7M);
 
-		i2c_slave_init(&i2c2_slave_ctx, (void *)I2C2_BASE,
-			       I2C2_OA1, I2C2_OA2, I2C2_OA2_MASK);
-		mcu_test_init(&i2c2_slave_ctx);
-		nvic_enable_irq(NVIC_I2C2_IRQ);
-		i2c_slave_start(&i2c2_slave_ctx);
+	// 	i2c_slave_init(&i2c2_slave_ctx, (void *)I2C2_BASE,
+	// 		       I2C2_OA1, I2C2_OA2, I2C2_OA2_MASK);
+	// 	mcu_test_init(&i2c2_slave_ctx);
+	// 	nvic_enable_irq(NVIC_I2C2_IRQ);
+	// 	i2c_slave_start(&i2c2_slave_ctx);
 
-		while (detect_test_mode() != TEST_MODE_RUN) {
-			mcu_process();
-			if (!mcu_get_test_mode())
-				break;
-		}
+	// 	while (detect_test_mode() != TEST_MODE_RUN) {
+	// 		mcu_process();
+	// 		if (!mcu_get_test_mode())
+	// 			break;
+	// 	}
 
-		set_board_type(SM7M_MP_1_1);
-		nvic_disable_irq(NVIC_I2C2_IRQ);
-		i2c_slave_stop(&i2c2_slave_ctx);
-	}
-	/* reset MCU_INT */
-	gpio_clear(MCU_INT_PORT, MCU_INT_PIN);
-	gpio_mode_setup(MCU_INT_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP,
-			MCU_INT_PIN);
+	// 	set_board_type(SM7M_MP_1_1);
+	// 	nvic_disable_irq(NVIC_I2C2_IRQ);
+	// 	i2c_slave_stop(&i2c2_slave_ctx);
+	// }
+
 
 	tca6416a_probe();
 	pic_probe();
@@ -128,23 +140,13 @@ int main(void)
 	mon_init();
 	mon_print_init();
 
-	/* check if i am se8 crtl board */
-	if (is_se6ctrl_board()){
-		set_board_type(SM7M_MP_SE8M);
-		set_hardware_version(0,0);
-		set_soc_forever();
-		}
-	else if (mcu_get_se6_aiucore()){
-                set_soc_forever();
-	 	set_board_type(SM7M_MP_1_1);
-	}
-	else{
-		set_board_type(SM7M_MP_1_1);
-	}
-	
+        set_soc_forever();
+	set_board_type(BM1684XEVB);
+
 	mcu_init(&i2c1_slave_ctx);
 	mcu_eeprom_init(&i2c1_slave_ctx);
 	wdt_init(&i2c1_slave_ctx);
+	power_gpio_init();
 	//slt_init(&i2c1_slave_ctx);
 
 	if (tca6416a_available())

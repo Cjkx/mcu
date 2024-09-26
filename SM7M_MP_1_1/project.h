@@ -17,6 +17,8 @@
 #define SM5MS	12
 #define SM5MA	13
 
+#define BM1684XEVB 0x20
+
 #define SM7M    0x30
 #define SM7SE6M	0x31
 #define SM7MQY	0x32
